@@ -4,12 +4,32 @@ Base interfaces that future modules can extend.
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-class IModel(ABC):
-    """Base interface for all AI models."""
+class IModelProvider(ABC):
+    """Base interface for all AI model providers."""
     
+    @abstractmethod
+    def load_model(self) -> None:
+        """Loads the model into memory."""
+        pass
+        
+    @abstractmethod
+    def unload_model(self) -> None:
+        """Unloads the model from memory to free resources."""
+        pass
+        
+    @abstractmethod
+    def health_check(self) -> Dict[str, Any]:
+        """Returns the health status of the provider (e.g., loaded, loading, error)."""
+        pass
+        
     @abstractmethod
     def generate(self, prompt: str, **kwargs) -> Any:
         """Generate a response based on a prompt."""
+        pass
+
+    @abstractmethod
+    def generate_stream(self, prompt: str, **kwargs) -> Any:
+        """Generate a response as a stream based on a prompt."""
         pass
 
 class ITool(ABC):

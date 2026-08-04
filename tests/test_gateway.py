@@ -15,7 +15,8 @@ class TestAIGateway(unittest.TestCase):
         response = self.gateway.process_request(self.valid_request)
         self.assertEqual(response["status"], "success")
         self.assertEqual(response["request_id"], "req-123")
-        self.assertEqual(response["reply"], "AI Gateway connected successfully.")
+        self.assertIn("[CHAT]", response["reply"])
+        self.assertIn("Hello AI", response["reply"])
         self.assertEqual(len(response["errors"]), 0)
 
     def test_missing_required_field(self):

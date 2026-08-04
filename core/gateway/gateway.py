@@ -7,6 +7,7 @@ from core.gateway.request_validator import RequestValidator
 from core.gateway.response_builder import ResponseBuilder
 from core.gateway.exceptions import GatewayValidationError
 from core.gateway.middleware import LoggingMiddleware
+from core.orchestrator import AIOrchestrator
 from utils.logger import get_logger
 
 logger = get_logger("gateway")
@@ -45,14 +46,14 @@ class AIGateway:
             # 1. Validate
             validated_request = RequestValidator.validate_and_parse(raw_request)
             
-            # 2. Forward to placeholder orchestrator
-            orchestrator_reply = self._placeholder_orchestrator(validated_request.message)
+            # 2. Forward to the AI Orchestrator
+            orchestrator_result = AIOrchestrator.process(validated_request)
             
             # 3. Build success response
             return ResponseBuilder.success(
                 request_id=validated_request.request_id,
-                reply=orchestrator_reply,
-                usage={"tokens": 42} # Placeholder usage
+                reply=orchestrator_result.get("reply"),
+                usage=orchestrator_result.get("usage", {})
             )
             
         except GatewayValidationError as e:
@@ -68,9 +69,3 @@ class AIGateway:
                 request_id=request_id,
                 errors=["An internal error occurred while processing the request."]
             )
-            
-    def _placeholder_orchestrator(self, message: str) -> str:
-        """
-        Temporary placeholder for the future AI Orchestrator.
-        """
-        return "AI Gateway connected successfully."
